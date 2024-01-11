@@ -1,9 +1,0 @@
-@startuml
-
-!include ./puml.style
-
-class Main {
-    + {static} main(args: String[])
-}
-
-@enduml
