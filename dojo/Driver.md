@@ -297,7 +297,7 @@ private Player decideGameWinner() {
 }
 ```
 
-It still does not compile. The game loop needs to be updated.
+6. It still does not compile. The game loop needs to be updated.
 
 ```
 while(! scorer.isEnded()) {
@@ -316,7 +316,66 @@ Winning this game: p1
 Player p1
 ```
 
+We can add, and commit. No need to push yet, we have not finished our refactoring effort.
+
+```
+mosser@azrael 2aa4-tennis % git status
+On branch demo
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        new file:   src/main/java/ca/mcscert/se2aa4/demos/tennis/Player.java
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   src/main/java/ca/mcscert/se2aa4/demos/tennis/Main.java
+        modified:   src/main/java/ca/mcscert/se2aa4/demos/tennis/Match.java
+        modified:   src/main/java/ca/mcscert/se2aa4/demos/tennis/Player.java
+        modified:   src/main/java/ca/mcscert/se2aa4/demos/tennis/ScoreSystem.java
+
+mosser@azrael 2aa4-tennis % git add -A
+mosser@azrael 2aa4-tennis % git commit -m "introduce player abstraction"
+[demo 766222d] introduce player abstraction
+ 5 files changed, 135 insertions(+), 13 deletions(-)
+ create mode 100644 src/main/java/ca/mcscert/se2aa4/demos/tennis/Player.java
+mosser@azrael 2aa4-tennis % 
+```
+
+
+## Let's now introduce a `ScoreSystem` interface
+
+We can use the _refactoring_ tooling from IntelliJ!
+
+1. Click on the _Refactor_ menu, _Extract/Introduce..._, and then _Interface..._
+    - Extracting interface is a really common refactoring operation.
+2. Tell IntelliJ what you want to do:
+    - We want to extract the methods into an interface
+    - We want to rename the current implementation as `StupidMVP`
+
+<div align="center">
+
+![IntelliJ GUI screenshot](./screenshot/refactor.png)
+
+</div>
+
+And... that's it.
+
+3. Look how IntelliJ has refactored the instantiation in `Match::play`:
+    - `ScoreSystem scorer = new StupidMVP();`
+    - This is how we obtain flexibility: the variable is a `ScoreSystem`, so whatever concrete object we're using, an instance of `StupidMVP` or a `SuperSmartCounter`, as long as it implement `ScoreSystem`, we have nothing to change in our code!
 
 
 
+Let's assess this refactor, check we have not broken anything.
+
+```
+mosser@azrael 2aa4-tennis % mvn -q clean package                        
+mosser@azrael 2aa4-tennis % java -jar target/tennis.jar -p1 20 -p2 78   
+Configuration[p1Strength=20, p2Strength=78]
+Winning this game: p1
+Player p1
+mosser@azrael 2aa4-tennis % 
+```
+
+We can now add, commit, and finally push the refactored design!
 

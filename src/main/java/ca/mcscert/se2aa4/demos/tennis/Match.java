@@ -8,7 +8,7 @@ public class Match {
     public Match(Integer integer, Integer integer1) { }
 
     public Player play() {
-        ScoreSystem scorer = new ScoreSystem();
+        ScoreSystem scorer = new StupidMVP();
         while(! scorer.isEnded()) {
             Player who = decideGameWinner();
             scorer.score(who);
