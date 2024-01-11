@@ -379,3 +379,40 @@ mosser@azrael 2aa4-tennis %
 
 We can now add, commit, and finally push the refactored design!
 
+```
+mosser@azrael 2aa4-tennis % git status  
+On branch demo
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        new file:   src/main/java/ca/mcscert/se2aa4/demos/tennis/StupidMVP.java
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   src/main/java/ca/mcscert/se2aa4/demos/tennis/Match.java
+        modified:   src/main/java/ca/mcscert/se2aa4/demos/tennis/ScoreSystem.java
+        modified:   src/main/java/ca/mcscert/se2aa4/demos/tennis/StupidMVP.java
+
+mosser@azrael 2aa4-tennis % git add -A
+mosser@azrael 2aa4-tennis % git commit -m "refactor: introduce abstraction for ScoreSystem"
+...
+mosser@azrael 2aa4-tennis % git tag demo_step_03
+mosser@azrael 2aa4-tennis % git push --tags
+...
+mosser@azrael 2aa4-tennis %  
+```
+
+And we are done!
+
+### UML Model
+
+<div align="center">
+
+![class diagram step 3](./puml/03_refactor.svg)
+
+</div>
+
+## Out of scope: Implementing Counting Algorithms
+
+Look at the `solution` branch to get two different implementations of the counting algorithm!
+
