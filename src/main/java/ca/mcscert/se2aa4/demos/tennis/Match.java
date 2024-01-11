@@ -7,19 +7,19 @@ public class Match {
 
     public Match(Integer integer, Integer integer1) { }
 
-    public String play() {
+    public Player play() {
         ScoreSystem scorer = new ScoreSystem();
         while(! scorer.isEnded()) {
-            String who = decideGameWinner();
+            Player who = decideGameWinner();
             scorer.score(who);
         }
         return scorer.winner()
                 .orElseThrow(() -> new IllegalStateException("No Winner!"));
     }
 
-    private String decideGameWinner() {
+    private Player decideGameWinner() {
         System.out.println("Winning this game: " + P1_NAME);
-        return P1_NAME;
+        return new Player(P1_NAME);
     }
 
 }

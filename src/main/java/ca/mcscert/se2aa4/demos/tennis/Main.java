@@ -13,7 +13,7 @@ public class Main {
             Configuration config = configure(args);
             System.out.println(config);
             Match theMatch = new Match(config.p1Strength(), config.p2Strength());
-            String winner = theMatch.play();
+            Player winner = theMatch.play();
             System.out.println(winner);
         } catch (Exception e) {
             System.err.println("An error has occurred");

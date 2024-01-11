@@ -4,9 +4,9 @@ import java.util.Optional;
 
 public class ScoreSystem {
 
-    private String winner = null;
+    private Player winner = null;
 
-    public void score(String playerName) {
+    public void score(Player playerName) {
         this.winner = playerName;
     }
 
@@ -14,7 +14,7 @@ public class ScoreSystem {
         return winner != null;
     }
 
-    public Optional<String> winner() {
+    public Optional<Player> winner() {
         return (isEnded()? Optional.of(winner): Optional.empty());
     }
 

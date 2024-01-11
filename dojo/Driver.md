@@ -15,7 +15,7 @@ Look at the repository:
 - `.github/workflows/build.yaml`: continuous integration pipeline to build and package the product each time we push to GitHub.
 - `src`: the source code. (Remember: software engineering is not all about coding, even if coding is essential).
 
-# Step #1: Fix the starter code structure
+## Step #1: Fix the starter code structure
 
 1. Create an  _immutable_ concept for `Configuration` inside `Main`
 
@@ -110,7 +110,7 @@ mosser@azrael 2aa4-tennis % git push --tags origin demo
 
 What we've done here is a _refactoring_. We have not added any new feature in the code. We have changed the structure so that it is better from a technical point of view.
 
-## UML Model(s)
+### UML Model(s)
 
 <div align="center">
 
@@ -119,7 +119,7 @@ What we've done here is a _refactoring_. We have not added any new feature in th
 
 </div>
 
-# Step #2: Create the MVP
+## Step #2: Create the MVP
  
 We need a `ScorerSystem`, to: 
 
@@ -203,10 +203,21 @@ Changes not staged for commit:
   (use "git restore <file>..." to discard changes in working directory)
         modified:   src/main/java/ca/mcscert/se2aa4/demos/tennis/Match.java
         modified:   src/main/java/ca/mcscert/se2aa4/demos/tennis/ScoreSystem.java
+mosser@azrael 2aa4-tennis % git add -A
+mosser@azrael 2aa4-tennis % git commit -m "minimal & viable product (assuming P1 always win)"
+...
+mosser@azrael 2aa4-tennis % git tag demo_step_02
+mosser@azrael 2aa4-tennis % git push --tags origin demo
+...
+mosser@azrael 2aa4-tennis %
 ```
 
+We have pushed our first version of the tennis counter.
 
-## UML model(s)
+- It is **minimal** because it operates under the assumption that the first player always win a game, and, as such, always wins the match.
+- It is **viable** because it contains the right abstraction that will allow us to incrementally enrich it later on: we now have in our backlog to implement a better `ScoreSystem`, and to do a better job in `Match::decideGameWinner`.
+
+### UML model(s)
 
 <div align="center">
 
@@ -214,3 +225,98 @@ Changes not staged for commit:
 ![class diagram step 1](./puml/02_sd_mvp.svg)
 
 </div>
+
+## Step 3: Refactoring (Player and ScoreSystem)
+
+Our code has real technical debt: 
+
+1. We've totally forgotten the notion of `Player`. Strings are not good abstractions to model what a player is.
+2. The `ScoreSystem` is a variation point, and, as such, should allow the extension of the code easily. We do need an interface for this.
+
+### First things first: Introducing Player
+
+This one is the most invasive one. We must rip that band-aid. Quickly.
+
+We'll start from the Entry point (`Main::main`) and unroll it.
+
+1. In `Main::main`:
+    - update the call to `Match::play()`: `Player winner = theMatch.play();`
+2. Create the `Player` class.
+    - So far, it only has the requirement of being _printable_. 
+    - So we'll give a player a name to be sure we have something to print.
+
+```
+public class Player {
+
+    private final String name;
+
+    public Player(String name) { this.name = name; }
+
+    @Override
+    public String toString() {
+        return "Player " + name;
+    }
+
+}
+```
+
+3. The code does not compile. We need to update `Match::play`'s signature
+    - `public Player play()`
+4. The code still does not compile. We need to update the `ScoreSystem::winner` method's signature
+    - Wait. Actually the whole `ScoreSystem` would benefit to rely on `Player` instead of Strings. We'll update the whole interface once and for all.
+
+```
+public class ScoreSystem {
+
+    private Player winner = null;
+
+    public void score(Player playerName) {
+        this.winner = playerName;
+    }
+
+    public boolean isEnded() {
+        return winner != null;
+    }
+
+    public Optional<Player> winner() {
+        return (isEnded()? Optional.of(winner): Optional.empty());
+    }
+
+}
+```
+
+Damn it, still does not compile. 
+
+5. We need to update the `Match` class to also create players, and use them!
+    - Principally in the `Match::decideGameWinner` method
+
+```
+private Player decideGameWinner() {
+    System.out.println("Winning this game: " + P1_NAME);
+    return new Player(P1_NAME);
+}
+```
+
+It still does not compile. The game loop needs to be updated.
+
+```
+while(! scorer.isEnded()) {
+    Player who = decideGameWinner();
+    scorer.score(who);
+}
+```
+
+Let's assess this refactor, check we have not broken anything (soon we'll have tests to do this for us):
+
+```
+mosser@azrael 2aa4-tennis % mvn -q clean package   
+mosser@azrael 2aa4-tennis % java -jar target/tennis.jar -p1 20 -p2 78                        
+Configuration[p1Strength=20, p2Strength=78]
+Winning this game: p1
+Player p1
+```
+
+
+
+
+
